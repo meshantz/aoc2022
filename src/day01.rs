@@ -1,20 +1,6 @@
 use std::{collections::HashMap, num::ParseIntError, str::FromStr};
 
-use strum_macros::EnumString;
-
 use crate::parser;
-
-#[derive(Debug, Clone, PartialEq, EnumString)]
-enum Direction {
-    #[strum(serialize = "U")]
-    Up,
-    #[strum(serialize = "D")]
-    Down,
-    #[strum(serialize = "L")]
-    Left,
-    #[strum(serialize = "R")]
-    Right,
-}
 
 #[derive(Debug)]
 struct Record {
