@@ -35,32 +35,41 @@ impl FromStr for Record {
 }
 
 pub fn solve() {
-    println!("Part 1");
-
     let data: Vec<Record> = parser::records_from_lines("data/day01.example");
-    println!("Example Result: {}", part1(&data));
+    println!("Example Result PART 1: {}", part1(&data));
+    println!("Example Result PART 2: {}", part2(&data));
 
     let data: Vec<Record> = parser::records_from_lines("data/day01.txt");
-    println!("Final Result: {}", part1(&data));
+    println!("Final Result PART 1: {}", part1(&data));
+    println!("Final Result PART 2: {}", part2(&data));
 }
 
-fn part1(data: &Vec<Record>) -> u32 {
+fn make_elves(data: &Vec<Record>) -> HashMap<usize, u32> {
     let mut elf_calories = HashMap::new();
     let mut elf: usize = 0;
-    let mut max_calorie_elf: usize = 0;
 
     for d in data {
         match d.calories {
             Some(c) => {
-                let cur_max = elf_calories.get(&max_calorie_elf).copied().unwrap_or(0);
                 let cal_count = elf_calories.entry(elf).or_insert(0u32);
                 *cal_count += c;
-                if *cal_count > cur_max {
-                    max_calorie_elf = elf;
-                }
             }
             None => elf += 1,
         }
     }
-    elf_calories.get(&max_calorie_elf).copied().unwrap_or(0)
+    elf_calories
+}
+
+fn part1(data: &Vec<Record>) -> u32 {
+    let elf_calories = make_elves(data);
+    let mut calorie_list: Vec<u32> = elf_calories.values().cloned().collect();
+    calorie_list.sort_by(|a, b| b.cmp(a));
+    calorie_list[0]
+}
+
+fn part2(data: &Vec<Record>) -> u32 {
+    let elf_calories = make_elves(data);
+    let mut calorie_list: Vec<u32> = elf_calories.values().cloned().collect();
+    calorie_list.sort_by(|a, b| b.cmp(a));
+    calorie_list[0] + calorie_list[1] + calorie_list[2]
 }
