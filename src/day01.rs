@@ -1,4 +1,4 @@
-use std::{num::ParseIntError, str::FromStr};
+use std::{collections::HashMap, num::ParseIntError, str::FromStr};
 
 use strum_macros::EnumString;
 
@@ -18,32 +18,49 @@ enum Direction {
 
 #[derive(Debug)]
 struct Record {
-    magnitude: i32,
-    direction: Direction,
+    calories: Option<u32>,
 }
 
 impl FromStr for Record {
     type Err = ParseIntError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let parts = s.split(" ");
-        let parts: Vec<&str> = parts.collect();
         Ok(Record {
-            magnitude: parts
-                .get(0)
-                .expect("couldn't find integer part")
-                .trim()
-                .parse()?,
-            direction: Direction::from_str(parts.get(1).expect("couldn't find string part").trim())
-                .expect("invalid direction"),
+            calories: match s.parse() {
+                Ok(c) => Some(c),
+                Err(_) => None,
+            },
         })
     }
 }
 
 pub fn solve() {
-    let data: Vec<Record> = parser::records_from_lines("data/test.numbers");
+    println!("Part 1");
+
+    let data: Vec<Record> = parser::records_from_lines("data/day01.example");
+    println!("Example Result: {}", part1(&data));
+
+    let data: Vec<Record> = parser::records_from_lines("data/day01.txt");
+    println!("Final Result: {}", part1(&data));
+}
+
+fn part1(data: &Vec<Record>) -> u32 {
+    let mut elf_calories = HashMap::new();
+    let mut elf: usize = 0;
+    let mut max_calorie_elf: usize = 0;
 
     for d in data {
-        println!("line in file was {:?}", d)
+        match d.calories {
+            Some(c) => {
+                let cur_max = elf_calories.get(&max_calorie_elf).copied().unwrap_or(0);
+                let cal_count = elf_calories.entry(elf).or_insert(0u32);
+                *cal_count += c;
+                if *cal_count > cur_max {
+                    max_calorie_elf = elf;
+                }
+            }
+            None => elf += 1,
+        }
     }
+    elf_calories.get(&max_calorie_elf).copied().unwrap_or(0)
 }
