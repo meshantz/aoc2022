@@ -22,6 +22,18 @@ enum RoundResult {
     Draw,
 }
 
+#[derive(Debug)]
+struct RecordPart1 {
+    opponent: Shape,
+    response: Shape,
+}
+
+#[derive(Debug)]
+struct RecordPart2 {
+    opponent: Shape,
+    response: RoundResult,
+}
+
 impl RoundResult {
     fn value(&self) -> u32 {
         match self {
@@ -35,8 +47,8 @@ impl RoundResult {
         match against {
             Shape::Rock => match self {
                 RoundResult::Draw => Shape::Rock,
-                RoundResult::Loss => Shape::Paper,
-                RoundResult::Win => Shape::Scissors,
+                RoundResult::Loss => Shape::Scissors,
+                RoundResult::Win => Shape::Paper,
             },
             Shape::Paper => match self {
                 RoundResult::Draw => Shape::Paper,
@@ -50,18 +62,6 @@ impl RoundResult {
             },
         }
     }
-}
-
-#[derive(Debug)]
-struct RecordPart1 {
-    opponent: Shape,
-    response: Shape,
-}
-
-#[derive(Debug)]
-struct RecordPart2 {
-    opponent: Shape,
-    response: RoundResult,
 }
 
 impl FromStr for RecordPart1 {
@@ -94,10 +94,6 @@ impl FromStr for RecordPart2 {
     }
 }
 
-trait Round {
-    fn round_value(&self) -> u32;
-}
-
 fn evaluate(a: &Shape, b: &Shape) -> RoundResult {
     match b {
         Shape::Rock => match a {
@@ -118,11 +114,13 @@ fn evaluate(a: &Shape, b: &Shape) -> RoundResult {
     }
 }
 
-fn value(shape: &Shape) -> u32 {
-    match shape {
-        Shape::Rock => 1,
-        Shape::Paper => 2,
-        Shape::Scissors => 3,
+impl Shape {
+    fn value(&self) -> u32 {
+        match self {
+            Shape::Rock => 1,
+            Shape::Paper => 2,
+            Shape::Scissors => 3,
+        }
     }
 }
 
@@ -132,8 +130,12 @@ impl RecordPart1 {
     }
 
     fn value(&self) -> u32 {
-        value(&self.response)
+        self.response.value()
     }
+}
+
+trait Round {
+    fn round_value(&self) -> u32;
 }
 
 impl Round for RecordPart1 {
@@ -144,8 +146,29 @@ impl Round for RecordPart1 {
 
 impl Round for RecordPart2 {
     fn round_value(&self) -> u32 {
-        value(&self.response.shape_to_get(&self.opponent)) + self.response.value()
+        self.response.shape_to_get(&self.opponent).value() + self.response.value()
     }
+}
+
+fn sum_rounds<T>(data: &Vec<T>) -> u32
+where
+    T: Round,
+{
+    let mut sum = 0;
+    for d in data {
+        sum += d.round_value();
+    }
+    sum
+}
+
+fn part1(filename: &str) -> u32 {
+    let data: Vec<RecordPart1> = parser::records_from_lines(filename);
+    sum_rounds(&data)
+}
+
+fn part2(filename: &str) -> u32 {
+    let data: Vec<RecordPart2> = parser::records_from_lines(filename);
+    sum_rounds(&data)
 }
 
 pub fn solve() {
@@ -156,25 +179,4 @@ pub fn solve() {
     let filename = "data/day02.txt";
     println!("Final Result DAY 02 PART 1: {}", part1(filename));
     println!("Final Result DAY 02 PART 2: {}", part2(filename));
-}
-
-fn sum_rounds<T>(data: &Vec<T>) -> u64
-where
-    T: Round,
-{
-    let mut sum = 0;
-    for d in data {
-        sum += d.round_value() as u64;
-    }
-    sum
-}
-
-fn part1(filename: &str) -> u64 {
-    let data: Vec<RecordPart1> = parser::records_from_lines(filename);
-    sum_rounds(&data)
-}
-
-fn part2(filename: &str) -> u64 {
-    let data: Vec<RecordPart2> = parser::records_from_lines(filename);
-    sum_rounds(&data)
 }
