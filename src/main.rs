@@ -4,6 +4,7 @@ use strum_macros::{EnumIter, EnumString};
 
 mod day01;
 mod day02;
+mod day03;
 mod parser;
 
 #[derive(Debug, Clone, PartialEq, EnumString, EnumIter)]
@@ -11,6 +12,7 @@ enum Days {
     All,
     Day01,
     Day02,
+    Day03,
 }
 
 #[derive(Parser)]
@@ -24,6 +26,7 @@ impl Days {
         match self {
             Days::Day01 => day01::solve(),
             Days::Day02 => day02::solve(),
+            Days::Day03 => day03::solve(),
             _ => panic!("Requested day [{:?}] not implemented!", self),
         }
     }
