@@ -6,6 +6,8 @@ mod day01;
 mod day02;
 mod day03;
 mod day04;
+mod day05;
+mod day06;
 mod parser;
 
 #[derive(Debug, Clone, PartialEq, EnumString, EnumIter)]
@@ -15,6 +17,8 @@ enum Days {
     Day02,
     Day03,
     Day04,
+    Day05,
+    Day06,
 }
 
 #[derive(Parser)]
@@ -30,6 +34,8 @@ impl Days {
             Days::Day02 => day02::solve(),
             Days::Day03 => day03::solve(),
             Days::Day04 => day04::solve(),
+            Days::Day05 => day05::solve(),
+            Days::Day06 => day06::solve(),
             _ => panic!("Requested day [{:?}] not implemented!", self),
         }
     }
