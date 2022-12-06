@@ -19,10 +19,9 @@ fn for_line(stream: &str, buffer_length: usize) -> usize {
     let mut validator = HashSet::new();
     for (index, current) in stream.chars().enumerate() {
         buffer.push_front(current);
-        if index < buffer_length {
+        if index < buffer_length - 1 {
             continue;
         }
-        buffer.pop_back();
 
         validator.clear();
         for sc in &buffer {
@@ -32,6 +31,10 @@ fn for_line(stream: &str, buffer_length: usize) -> usize {
         // println!("Considering {:?}: {}", buffer, validator.len());
         if validator.len() == buffer_length {
             return index + 1;
+        }
+
+        if buffer.len() >= buffer_length {
+            buffer.pop_back();
         }
     }
 
