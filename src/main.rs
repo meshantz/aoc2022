@@ -8,6 +8,7 @@ mod day03;
 mod day04;
 mod day05;
 mod day06;
+// NEXTMOD
 mod parser;
 
 #[derive(Debug, Clone, PartialEq, EnumString, EnumIter)]
@@ -19,6 +20,7 @@ enum Days {
     Day04,
     Day05,
     Day06,
+    // NEXTENUM
 }
 
 #[derive(Parser)]
@@ -36,6 +38,7 @@ impl Days {
             Days::Day04 => day04::solve(),
             Days::Day05 => day05::solve(),
             Days::Day06 => day06::solve(),
+            // NEXTMATCH
             _ => panic!("Requested day [{:?}] not implemented!", self),
         }
     }
