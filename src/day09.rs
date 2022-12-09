@@ -1,5 +1,9 @@
 use crate::parser;
-use std::{collections::HashSet, num::ParseIntError, str::FromStr};
+use std::{
+    collections::{HashMap, HashSet},
+    num::ParseIntError,
+    str::FromStr,
+};
 use strum_macros::EnumString;
 
 #[derive(Debug, Clone, PartialEq, EnumString)]
@@ -20,7 +24,7 @@ struct Move {
     amount: u8,
 }
 
-#[derive(Debug, PartialEq, Eq, Hash)]
+#[derive(Debug, PartialEq, Eq, Hash, Clone)]
 struct Vector2 {
     x: i32,
     y: i32,
@@ -132,23 +136,43 @@ impl Direction {
 }
 
 pub fn solve() {
-    part1("data/day09.example");
-    part1("data/day09.txt");
+    part1("data/day09.example", false);
+    part1("data/day09.txt", false);
+    part2("data/day09.example2", false);
+    part2("data/day09.txt", false);
 }
 
-fn part1(filename: &str) {
+fn part1(filename: &str, show_steps: bool) {
     let data: Vec<Move> = parser::records_from_lines(filename);
-    let mut head = Vector2::new();
-    let mut tail = Vector2::new();
-    let mut visited = HashSet::new();
+    let visited = visit(&data, 2, show_steps);
+    println!("Part 1: {}", visited.len());
+}
 
-    visited.insert(Vector2::from(tail.x, tail.y));
+fn part2(filename: &str, show_steps: bool) {
+    let data: Vec<Move> = parser::records_from_lines(filename);
+    let visited = visit(&data, 10, show_steps);
+    println!("Part 1: {}", visited.len());
+}
+
+fn visit(data: &Vec<Move>, rope_size: usize, show_steps: bool) -> HashSet<Vector2> {
+    let mut visited = HashSet::new();
+    let mut rope = Vec::new();
+
+    for _ in 0..rope_size {
+        rope.push(Vector2::new());
+    }
+
+    visited.insert(Vector2::from(0, 0));
 
     for move_ in data {
         // println!("{:?}", move_);
         for _ in 0..move_.amount {
-            head.move_by(&move_.direction.unit_vector());
-            tail.follow(&head);
+            rope[0].move_by(&move_.direction.unit_vector());
+            for i in 1..rope_size {
+                let leader = rope[i - 1].clone();
+                rope[i].follow(&leader);
+            }
+            let tail = rope.last().unwrap();
             visited.insert(Vector2::from(tail.x, tail.y));
 
             // println!(
@@ -158,8 +182,33 @@ fn part1(filename: &str) {
             //     tail,
             //     visited.len()
             // );
+            if show_steps {
+                show_state(&rope)
+            }
         }
     }
 
-    println!("Part 1: {}", visited.len());
+    visited
+}
+
+fn show_state(rope: &Vec<Vector2>) {
+    let mut rope_map = HashMap::new();
+    // reverse so that the end of the rope is covered
+    for (i, knot) in rope.iter().enumerate().rev() {
+        rope_map.insert(Vector2::from(knot.x, knot.y), i);
+    }
+
+    for j in (-5..15).rev() {
+        for i in -11..14 {
+            let v = rope_map.get(&Vector2::from(i, j));
+            match v {
+                Some(0) => print!("H"),
+                Some(10) => print!("T"),
+                Some(i) => print!("{}", i),
+                None => print!("."),
+            }
+        }
+        println!();
+    }
+    println!();
 }
