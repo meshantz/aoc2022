@@ -12,6 +12,7 @@ mod day09;
 mod day10;
 mod day11;
 mod day12;
+mod day13;
 // NEXTMOD
 mod parser;
 
@@ -28,6 +29,7 @@ enum Days {
     Day10,
     Day11,
     Day12,
+    Day13,
     // NEXTENUM
 }
 
@@ -50,6 +52,7 @@ impl Days {
             Days::Day10 => day10::solve(),
             Days::Day11 => day11::solve(),
             Days::Day12 => day12::solve(),
+            Days::Day13 => day13::solve(),
             // NEXTMATCH
             _ => panic!("Requested day [{:?}] not implemented!", self),
         }
