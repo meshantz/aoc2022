@@ -12,6 +12,7 @@ mod day09;
 mod day10;
 mod day11;
 mod day12;
+mod day13;
 mod day14;
 mod day15;
 mod day16;
@@ -40,6 +41,7 @@ enum Days {
     Day10,
     Day11,
     Day12,
+    Day13,
     Day14,
     Day15,
     Day16,
@@ -74,6 +76,7 @@ impl Days {
             Days::Day10 => day10::solve(),
             Days::Day11 => day11::solve(),
             Days::Day12 => day12::solve(),
+            Days::Day13 => day13::solve(),
             Days::Day14 => day14::solve(),
             Days::Day15 => day15::solve(),
             Days::Day16 => day16::solve(),
